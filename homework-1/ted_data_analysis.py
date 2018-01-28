@@ -49,3 +49,18 @@ def views_histogram():
 
 # views_histogram()
 
+
+def events_histogram():
+    events_group = dict()
+    for d in data:
+        events_group[d.event] = events_group.get(d.event, 0) + 1
+
+    top_events = sorted(events_group, key=events_group.get, reverse=True)[:20]
+    # pprint(top_events)
+    pyplot.xticks(range(len(top_events)), top_events, rotation=90)
+    pyplot.bar(range(len(top_events)), [events_group[e] for e in top_events])
+    pyplot.show()
+
+
+events_histogram()
+
