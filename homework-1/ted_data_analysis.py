@@ -109,3 +109,17 @@ def time_to_publish():
 # time_to_publish()
 
 # print([d.published_date > d.film_date for d in data].count(False))
+
+
+def language_histogram():
+    interval = 1
+    d = [d.languages for d in data]
+    bins = range(0, int(max(d)), interval)
+    pyplot.grid(axis='y', zorder=0)
+    pyplot.xticks(bins[::5])
+    pyplot.hist(d, bins=bins, edgecolor='black', linewidth=0.5, zorder=2)
+    pyplot.axvline(np.mean(d), color='black')
+    pyplot.show()
+
+
+language_histogram()
