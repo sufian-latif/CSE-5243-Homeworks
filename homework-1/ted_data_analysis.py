@@ -7,37 +7,45 @@ data = read_data('ted_main.csv')
 
 
 def duration_histogram():
-    interval = 5
-    d = [d.duration / 60.0 for d in data]
-    pyplot.xticks(range(0, int(max(d) + interval), interval))
-    pyplot.hist(d, bins=50, edgecolor='black', linewidth=0.5)
+    interval = 1  # 5-minutes interval
+    d = [d.duration for d in data]
+    bins = range(0, int(max(d) + interval), interval)
+    pyplot.xticks(bins[::5])
+    pyplot.yscale('log')
+    pyplot.hist(d, bins=bins, edgecolor='black', linewidth=0.5)
     pyplot.axvline(np.mean(d), color='black')
     pyplot.show()
 
 
 # duration_histogram()
 
+
 def tag_groups():
     tag_frequency = dict()
     for d in data:
         for tag in d.tags:
-            if tag in tag_frequency:
-                tag_frequency[tag] += 1
-            else:
-                tag_frequency[tag] = 1
+            tag_frequency[tag] = tag_frequency.get(tag, 0) + 1
     # pprint([(k, tag_frequency[k]) for k in sorted(tag_frequency, key=tag_frequency.get, reverse=True)])
+    top_tags = sorted(tag_frequency, key=tag_frequency.get, reverse=True)[:20]
+    # pprint(top_tags)
+    pyplot.xticks(range(len(top_tags)), top_tags, rotation=90)
+    pyplot.bar(range(len(top_tags)), [tag_frequency[t] for t in top_tags])
+    pyplot.show()
 
-    group_size = 50
-    tag_groups = dict()
-    for tag in tag_frequency:
-        gr = int(tag_frequency[tag] / group_size)
-        if gr * group_size in tag_groups:
-            tag_groups[gr * group_size].append(tag)
-        else:
-            tag_groups[gr * group_size] = [tag]
-
-
-    pprint(tag_groups)
 
 # tag_groups()
+
+
+def views_histogram():
+    interval = 500
+    d = [d.views / 1000.0 for d in data]  # k-views
+    bins = range(0, int(max(d) + interval), interval)
+    pyplot.xticks(bins[::10])
+    pyplot.yscale('log')
+    pyplot.hist(d, bins=bins, edgecolor='black', linewidth=0.5)
+    pyplot.axvline(np.mean(d), color='black')
+    pyplot.show()
+
+
+# views_histogram()
 
