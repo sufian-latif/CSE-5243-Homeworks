@@ -22,19 +22,26 @@ def duration_histogram():
 
 def tag_groups():
     tag_frequency = dict()
+    tag_views = dict()
     for d in data:
         for tag in d.tags:
             tag_frequency[tag] = tag_frequency.get(tag, 0) + 1
+            tag_views[tag] = tag_views.get(tag, 0) + d.views
     # pprint([(k, tag_frequency[k]) for k in sorted(tag_frequency, key=tag_frequency.get, reverse=True)])
     top_tags = sorted(tag_frequency, key=tag_frequency.get, reverse=True)[:20]
-    # pprint(top_tags)
     pyplot.grid(axis='y', zorder=0)
     pyplot.xticks(range(len(top_tags)), top_tags, rotation=90)
     pyplot.bar(range(len(top_tags)), [tag_frequency[t] for t in top_tags], zorder=2)
     pyplot.show()
 
+    top_viewd_tags = sorted(tag_views, key=tag_views.get, reverse=True)[:20]
+    pyplot.grid(axis='y', zorder=0)
+    pyplot.xticks(range(len(top_viewd_tags)), top_viewd_tags, rotation=90)
+    pyplot.bar(range(len(top_viewd_tags)), [tag_views[t] for t in top_viewd_tags], zorder=2)
+    pyplot.show()
 
-# tag_groups()
+
+tag_groups()
 
 
 def views_histogram():
@@ -122,4 +129,28 @@ def language_histogram():
     pyplot.show()
 
 
-language_histogram()
+# language_histogram()
+
+
+def language_view_scatter():
+    d_lang = [d.languages for d in data]
+    d_view = [d.views for d in data]
+
+    pyplot.scatter(d_lang, d_view)
+    pyplot.show()
+
+
+# language_view_scatter()
+
+
+def duration_view_scatter():
+    d_dur = [d.duration for d in data]
+    d_view = [d.views for d in data]
+
+    pyplot.scatter(d_dur, d_view)
+    pyplot.show()
+
+
+# duration_view_scatter()
+
+
