@@ -28,7 +28,7 @@ class TEDData:
 
 
 def read_data(file_name):
-    with open(file_name, 'r') as csvfile:
+    with open(file_name, 'r', encoding='utf8') as csvfile:
         reader = csv.reader(csvfile)
         TEDData.headers = next(reader)
         data = []
