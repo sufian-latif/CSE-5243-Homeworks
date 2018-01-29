@@ -41,7 +41,7 @@ def tag_groups():
     pyplot.show()
 
 
-tag_groups()
+# tag_groups()
 
 
 def views_histogram():
@@ -153,4 +153,52 @@ def duration_view_scatter():
 
 # duration_view_scatter()
 
+def occupation_group():
+    occ_frequency = dict()
+    occ_views = dict()
+    for d in data:
+        for occ in d.speaker_occupation:
+            occ_frequency[occ] = occ_frequency.get(occ, 0) + 1
+            occ_views[occ] = occ_views.get(occ, 0) + d.views
+
+    print(len(occ_frequency))
+    # pprint([(k, tag_frequency[k]) for k in sorted(tag_frequency, key=tag_frequency.get, reverse=True)])
+    top_tags = sorted(occ_frequency, key=occ_frequency.get, reverse=True)[:20]
+    pyplot.grid(axis='y', zorder=0)
+    pyplot.xticks(range(len(top_tags)), top_tags, rotation=90)
+    pyplot.bar(range(len(top_tags)), [occ_frequency[t] for t in top_tags], zorder=2)
+    pyplot.show()
+
+    top_viewd_tags = sorted(occ_views, key=occ_views.get, reverse=True)[:20]
+    pyplot.grid(axis='y', zorder=0)
+    pyplot.xticks(range(len(top_viewd_tags)), top_viewd_tags, rotation=90)
+    pyplot.bar(range(len(top_viewd_tags)), [occ_views[t] for t in top_viewd_tags], zorder=2)
+    pyplot.show()
+
+
+# occupation_group()
+
+def tag_trend():
+    years = range(2006, 2017)
+    tag_frequency = dict()
+    tag_views = dict()
+    for d in data:
+        if d.film_date.year > 2005:
+            for tag in d.tags:
+                tag_frequency[tag] = tag_frequency.get(tag, 0) + 1
+                tag_views[tag] = tag_views.get(tag, 0) + d.views
+    top_tags = sorted(tag_frequency, key=tag_frequency.get, reverse=True)[:10]
+
+    pyplot.xticks(range(len(years)), years)
+    pyplot.grid(axis='x')
+
+    for tag in top_tags:
+        counts = [len([d for d in data if d.film_date.year == year and tag in d.tags]) for year in years]
+        pyplot.plot(counts, label=tag)
+
+    pyplot.legend()
+    pyplot.show()
+
+
+# tag_trend()
 
