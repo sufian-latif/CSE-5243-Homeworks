@@ -181,7 +181,7 @@ def occupation_group():
 # occupation_group()
 
 def tag_trend():
-    years = range(2006, 2017)
+    years = range(2006, 2018)
     tag_frequency = dict()
     tag_views = dict()
     for d in data:
@@ -191,18 +191,17 @@ def tag_trend():
                     continue
                 tag_frequency[tag] = tag_frequency.get(tag, 0) + 1
                 tag_views[tag] = tag_views.get(tag, 0) + d.views
-    top_tags = sorted(tag_frequency, key=tag_frequency.get, reverse=True)[:10]
+    top_tags = sorted(tag_frequency, key=tag_frequency.get, reverse=True)[:8]
 
     pyplot.xticks(range(len(years)), years)
     pyplot.grid(axis='x')
 
     for tag in top_tags:
-        counts = [len([d for d in data if d.film_date.year == year and tag in d.tags]) for year in years]
+        counts = [len([d for d in data if d.film_date.year == year and tag in d.tags]) / len(
+            [d for d in data if d.film_date.year == year]) * 100 for year in years]
         pyplot.plot(counts, label=tag)
 
     pyplot.legend()
     pyplot.show()
 
-
 # tag_trend()
-
