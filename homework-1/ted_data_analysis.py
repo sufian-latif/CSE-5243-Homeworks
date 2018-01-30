@@ -25,6 +25,8 @@ def tag_groups():
     tag_views = dict()
     for d in data:
         for tag in d.tags:
+            if tag == 'TEDx':
+                continue
             tag_frequency[tag] = tag_frequency.get(tag, 0) + 1
             tag_views[tag] = tag_views.get(tag, 0) + d.views
     # pprint([(k, tag_frequency[k]) for k in sorted(tag_frequency, key=tag_frequency.get, reverse=True)])
@@ -169,10 +171,10 @@ def occupation_group():
     pyplot.bar(range(len(top_tags)), [occ_frequency[t] for t in top_tags], zorder=2)
     pyplot.show()
 
-    top_viewd_tags = sorted(occ_views, key=occ_views.get, reverse=True)[:20]
+    top_viewed_tags = sorted(occ_views, key=occ_views.get, reverse=True)[:20]
     pyplot.grid(axis='y', zorder=0)
-    pyplot.xticks(range(len(top_viewd_tags)), top_viewd_tags, rotation=90)
-    pyplot.bar(range(len(top_viewd_tags)), [occ_views[t] for t in top_viewd_tags], zorder=2)
+    pyplot.xticks(range(len(top_viewed_tags)), top_viewed_tags, rotation=90)
+    pyplot.bar(range(len(top_viewed_tags)), [occ_views[t] for t in top_viewed_tags], zorder=2)
     pyplot.show()
 
 
@@ -185,6 +187,8 @@ def tag_trend():
     for d in data:
         if d.film_date.year > 2005:
             for tag in d.tags:
+                if tag == 'TEDx':
+                    continue
                 tag_frequency[tag] = tag_frequency.get(tag, 0) + 1
                 tag_views[tag] = tag_views.get(tag, 0) + d.views
     top_tags = sorted(tag_frequency, key=tag_frequency.get, reverse=True)[:10]
