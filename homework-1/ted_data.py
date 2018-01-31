@@ -20,7 +20,7 @@ class TEDData:
         self.published_date = datetime.datetime.fromtimestamp(int(row[9]))
         self.ratings = eval(row[10])
         self.related_talks = eval(row[11])
-        self.speaker_occupation = re.split('[/;]', row[12].lower())
+        self.speaker_occupation = re.split('[,/;]', row[12].lower())
         self.tags = eval(row[13])
         self.title = row[14]
         self.url = row[15]
