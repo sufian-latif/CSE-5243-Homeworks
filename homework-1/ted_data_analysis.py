@@ -7,8 +7,9 @@ ted_data = ted_data.read_data('ted_main.csv')
 tedx_data = [d for d in ted_data if 'TEDx' in d.tags]
 
 
+
 def duration_histogram():
-    interval = 1  # 5-minutes interval
+    interval = 1
     d = [d.duration for d in ted_data]
     bins = range(0, int(max(d)), interval)
     pyplot.grid(axis='y', zorder=0)
@@ -214,3 +215,48 @@ def tag_trend():
     pyplot.show()
 
 # tag_trend()
+
+
+def comments_histogram():
+    interval = 50
+    d = [d.comments for d in ted_data]
+    bins = range(0, int(max(d)) + interval, interval)
+    print(bins)
+    pyplot.grid(axis='y', zorder=0)
+    pyplot.xticks(bins[::10])
+    pyplot.hist(d, bins=bins, edgecolor='black', linewidth=0.5, zorder=2)
+    pyplot.axvline(np.mean(d), color='black')
+    pyplot.show()
+
+
+# comments_histogram()
+
+
+def discuss_histogram():
+    interval = 1
+    d = [10000 * d.comments / d.views for d in ted_data]
+    # bins = range(0, int(max(d)) + interval, interval)
+    # print(bins)
+    pyplot.grid(axis='y', zorder=0)
+    # pyplot.xticks(bins[::])
+    pyplot.hist(d, bins=100, edgecolor='black', linewidth=0.5, zorder=2)
+    pyplot.axvline(np.mean(d), color='black')
+    pyplot.show()
+
+
+# discuss_histogram()
+
+
+def duration_longwinded_scatter():
+    d_dur = [d.duration for d in ted_data]
+    d_long = [d.ratings['Longwinded'] for d in ted_data]
+    d_long_n = [d.norm_ratings['Longwinded'] for d in ted_data]
+
+    # pyplot.scatter(d_dur, d_long, marker='.')
+    pyplot.scatter(d_dur, d_long_n, marker='.')
+    pyplot.axvline(25, color='black', linewidth=0.5)
+    pyplot.axvline(47, color='black', linewidth=0.5)
+    pyplot.show()
+
+# duration_longwinded_scatter()
+
