@@ -2,6 +2,7 @@ import ted_data
 from pprint import pprint
 from matplotlib import pyplot, dates
 import numpy as np
+from functools import reduce
 
 ted_data = ted_data.read_data('ted_main.csv')
 tedx_data = [d for d in ted_data if 'TEDx' in d.tags]
@@ -260,3 +261,34 @@ def duration_longwinded_scatter():
 
 # duration_longwinded_scatter()
 
+
+def tech_occupation():
+    d = [d for d in ted_data if 'technology' in d.tags]
+    print(len(d))
+    tech_occ = dict()
+    for d in d:
+        for occ in d.speaker_occupation:
+            tech_occ[occ] = tech_occ.get(occ, 0) + 1
+
+    top_occs = sorted(tech_occ, key=tech_occ.get, reverse=True)[:10]
+
+    pprint([(k, tech_occ[k]) for k in top_occs])
+
+# tech_occupation()
+
+
+def writer_tags():
+    d = [d for d in ted_data if 'writer' in d.speaker_occupation]
+    print(len(d))
+    writer_tag = dict()
+    for d in d:
+        for tag in d.tags:
+            if tag == 'TEDx':
+                continue
+            writer_tag[tag] = writer_tag.get(tag, 0) + 1
+
+    top_tags = sorted(writer_tag, key=writer_tag.get, reverse=True)[:10]
+    pprint([(k, writer_tag[k]) for k in top_tags])
+
+
+# writer_tags()

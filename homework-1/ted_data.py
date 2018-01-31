@@ -18,9 +18,10 @@ class TEDData:
         self.name = row[7]
         self.num_speaker = row[8]
         self.published_date = datetime.datetime.fromtimestamp(int(row[9]))
-        self.ratings = eval(row[10])
+        self.ratings = dict((r['name'], r['count']) for r in eval(row[10]))
+        self.norm_ratings = dict((k, self.ratings[k] / sum(self.ratings.values())) for k in self.ratings)
         self.related_talks = eval(row[11])
-        self.speaker_occupation = re.split('[,/;]', row[12].lower())
+        self.speaker_occupation = [s.strip() for s in re.split('[,/;]', row[12].lower())]
         self.tags = eval(row[13])
         self.title = row[14]
         self.url = row[15]
