@@ -3,12 +3,13 @@ from pprint import pprint
 from matplotlib import pyplot, dates
 import numpy as np
 
-data = ted_data.read_data('ted_main.csv')
+ted_data = ted_data.read_data('ted_main.csv')
+tedx_data = [d for d in ted_data if 'TEDx' in d.tags]
 
 
 def duration_histogram():
     interval = 1  # 5-minutes interval
-    d = [d.duration for d in data]
+    d = [d.duration for d in ted_data]
     bins = range(0, int(max(d)), interval)
     pyplot.grid(axis='y', zorder=0)
     pyplot.xticks(bins[::5])
@@ -23,7 +24,7 @@ def duration_histogram():
 def tag_groups():
     tag_frequency = dict()
     tag_views = dict()
-    for d in data:
+    for d in ted_data:
         for tag in d.tags:
             if tag == 'TEDx':
                 continue
@@ -48,7 +49,7 @@ def tag_groups():
 
 def views_histogram():
     interval = 500
-    d = [d.views / 1000.0 for d in data]  # k-views
+    d = [d.views / 1000.0 for d in ted_data]  # k-views
     bins = range(0, int(max(d) + interval), interval)
     pyplot.xticks(bins[::10])
     pyplot.yscale('log')
@@ -62,7 +63,7 @@ def views_histogram():
 
 def events_histogram():
     events_group = dict()
-    for d in data:
+    for d in ted_data:
         events_group[d.event] = events_group.get(d.event, 0) + 1
 
     top_events = sorted(events_group, key=events_group.get, reverse=True)[:20]
@@ -77,17 +78,25 @@ def events_histogram():
 
 def frequency_over_years():
     filmed = dict()
+    filmed_tedx = dict()
     published = dict()
-    for d in data:
+    for d in ted_data:
+        if d.film_date.year < 2001:
+            continue
+        if 'TEDx' in d.tags:
+            filmed_tedx[d.film_date.year] = filmed_tedx.get(d.film_date.year, 0) + 1
         filmed[d.film_date.year] = filmed.get(d.film_date.year, 0) + 1
         published[d.published_date.year] = published.get(d.published_date.year, 0) + 1
 
     pyplot.grid()
     pyplot.xticks(range(min(filmed.keys()), max(filmed.keys()) + 1), rotation=90)
-    pyplot.plot([k for k in sorted(filmed.keys())],
-                [filmed[k] for k in sorted(filmed.keys())], 'o-')
-    pyplot.plot([k for k in sorted(published.keys())],
-                [published[k] for k in sorted(published.keys())], 'o-')
+    pyplot.plot([k for k in sorted(filmed.keys())], [filmed[k] for k in sorted(filmed.keys())],
+                'o-', label='Talks filmed')
+    pyplot.plot([k for k in sorted(published.keys())], [published[k] for k in sorted(published.keys())],
+                'o-', label='Talks published')
+    pyplot.plot([k for k in sorted(filmed_tedx.keys())], [filmed_tedx[k] for k in sorted(filmed_tedx.keys())],
+                'o-', label='TEDx talks filmed')
+    pyplot.legend()
     pyplot.show()
 
 
@@ -99,7 +108,7 @@ def time_to_publish():
     x_interval = 250
     y_interval = 2
 
-    d_film = sorted(data, key=lambda d: d.film_date)[:]
+    d_film = sorted(ted_data, key=lambda d: d.film_date)[:]
     y_film = [dates.date2num(d.film_date) / 365 for d in d_film]
     y_publish = [dates.date2num(d.published_date) / 365 for d in d_film]
     tstamps = set([int(y) for y in y_film + y_publish])
@@ -110,7 +119,7 @@ def time_to_publish():
     pyplot.plot(range(len(d_film)), y_film, '-', linewidth=0.75)
     pyplot.plot(range(len(d_film)), y_publish, '-', linewidth=0.75)
     pyplot.fill_between(range(len(d_film)), y_film, y_publish, facecolor='xkcd:ice blue')
-    pyplot.axvline(cut, color='black')
+    # pyplot.axvline(cut, color='black')
     pyplot.ticklabel_format()
     pyplot.show()
 
@@ -122,7 +131,7 @@ def time_to_publish():
 
 def language_histogram():
     interval = 1
-    d = [d.languages for d in data]
+    d = [d.languages for d in ted_data]
     bins = range(0, int(max(d)), interval)
     pyplot.grid(axis='y', zorder=0)
     pyplot.xticks(bins[::5])
@@ -135,8 +144,8 @@ def language_histogram():
 
 
 def language_view_scatter():
-    d_lang = [d.languages for d in data]
-    d_view = [d.views for d in data]
+    d_lang = [d.languages for d in ted_data]
+    d_view = [d.views for d in ted_data]
 
     pyplot.scatter(d_lang, d_view)
     pyplot.show()
@@ -146,8 +155,8 @@ def language_view_scatter():
 
 
 def duration_view_scatter():
-    d_dur = [d.duration for d in data]
-    d_view = [d.views for d in data]
+    d_dur = [d.duration for d in ted_data]
+    d_view = [d.views for d in ted_data]
 
     pyplot.scatter(d_dur, d_view)
     pyplot.show()
@@ -158,12 +167,12 @@ def duration_view_scatter():
 def occupation_group():
     occ_frequency = dict()
     occ_views = dict()
-    for d in data:
+    for d in ted_data:
         for occ in d.speaker_occupation:
             occ_frequency[occ] = occ_frequency.get(occ, 0) + 1
             occ_views[occ] = occ_views.get(occ, 0) + d.views
 
-    print(len(occ_frequency))
+    # print(len(occ_frequency))
     # pprint([(k, tag_frequency[k]) for k in sorted(tag_frequency, key=tag_frequency.get, reverse=True)])
     top_tags = sorted(occ_frequency, key=occ_frequency.get, reverse=True)[:20]
     pyplot.grid(axis='y', zorder=0)
@@ -184,7 +193,7 @@ def tag_trend():
     years = range(2006, 2018)
     tag_frequency = dict()
     tag_views = dict()
-    for d in data:
+    for d in ted_data:
         if d.film_date.year > 2005:
             for tag in d.tags:
                 if tag == 'TEDx':
@@ -197,8 +206,8 @@ def tag_trend():
     pyplot.grid(axis='x')
 
     for tag in top_tags:
-        counts = [len([d for d in data if d.film_date.year == year and tag in d.tags]) / len(
-            [d for d in data if d.film_date.year == year]) * 100 for year in years]
+        counts = [len([d for d in ted_data if d.film_date.year == year and tag in d.tags]) / len(
+            [d for d in ted_data if d.film_date.year == year]) * 100 for year in years]
         pyplot.plot(counts, label=tag)
 
     pyplot.legend()
