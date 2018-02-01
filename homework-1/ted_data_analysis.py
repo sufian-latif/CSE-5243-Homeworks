@@ -2,11 +2,11 @@ import ted_data
 from pprint import pprint
 from matplotlib import pyplot, dates
 import numpy as np
+import networkx as nx
 from functools import reduce
 
 ted_data = ted_data.read_data('ted_main.csv')
 tedx_data = [d for d in ted_data if 'TEDx' in d.tags]
-
 
 
 def duration_histogram():
@@ -215,6 +215,7 @@ def tag_trend():
     pyplot.legend()
     pyplot.show()
 
+
 # tag_trend()
 
 
@@ -259,6 +260,7 @@ def duration_longwinded_scatter():
     pyplot.axvline(47, color='black', linewidth=0.5)
     pyplot.show()
 
+
 # duration_longwinded_scatter()
 
 
@@ -273,6 +275,7 @@ def tech_occupation():
     top_occs = sorted(tech_occ, key=tech_occ.get, reverse=True)[:10]
 
     pprint([(k, tech_occ[k]) for k in top_occs])
+
 
 # tech_occupation()
 
@@ -292,3 +295,41 @@ def writer_tags():
 
 
 # writer_tags()
+
+
+def tags_graph():
+    all_tags = reduce(set.union, [d.tags for d in ted_data], set()) - {'TEDx'}
+
+    edges = dict((k, dict()) for k in all_tags)
+
+    for d in ted_data:
+        for a in d.tags:
+            for b in d.tags:
+                if a == b or a not in all_tags or b not in all_tags:
+                    continue
+                u, v = sorted([a, b])
+                edges[u][v] = edges[u].get(v, 0) + 1
+
+    graph = nx.Graph()
+    cut = 80
+
+    for u in edges:
+        for v in edges[u]:
+            if edges[u][v] >= cut:
+                graph.add_node(u)
+                graph.add_node(v)
+                graph.add_edge(u, v, weight=edges[u][v])
+
+    edge_width = [d['weight'] / cut for (u, v, d) in graph.edges(data=True)]
+
+    pos = nx.kamada_kawai_layout(graph, scale=100)
+    nx.draw_networkx_nodes(graph, pos, node_size=10000, alpha=0)
+    nx.draw_networkx_edges(graph, pos, width=edge_width, edge_color='gray')
+    nx.draw_networkx_labels(graph, pos, font_size=8, font_color='w',
+                            bbox=dict(boxstyle='round', ec='k', fc='k', alpha=1))
+
+    pyplot.axis('off')
+    pyplot.show()
+
+
+tags_graph()
