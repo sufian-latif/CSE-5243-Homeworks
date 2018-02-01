@@ -148,6 +148,7 @@ def language_histogram():
 def language_view_scatter():
     d_lang = [d.languages for d in ted_data]
     d_view = [d.views for d in ted_data]
+    print(np.corrcoef(d_lang, d_view))
 
     pyplot.scatter(d_lang, d_view)
     pyplot.show()
@@ -159,6 +160,7 @@ def language_view_scatter():
 def duration_view_scatter():
     d_dur = [d.duration for d in ted_data]
     d_view = [d.views for d in ted_data]
+    print(np.corrcoef(d_dur, d_view))
 
     pyplot.scatter(d_dur, d_view)
     pyplot.show()
@@ -253,6 +255,7 @@ def duration_longwinded_scatter():
     d_dur = [d.duration for d in ted_data]
     d_long = [d.ratings['Longwinded'] for d in ted_data]
     d_long_n = [d.norm_ratings['Longwinded'] for d in ted_data]
+    print(np.corrcoef(d_dur, d_long_n))
 
     # pyplot.scatter(d_dur, d_long, marker='.')
     pyplot.scatter(d_dur, d_long_n, marker='.')
@@ -332,4 +335,4 @@ def tags_graph():
     pyplot.show()
 
 
-tags_graph()
+# tags_graph()
