@@ -1,6 +1,6 @@
 import ted_data
 from pprint import pprint
-from matplotlib import pyplot, dates
+from matplotlib import pyplot, dates, cm
 import numpy as np
 import networkx as nx
 from functools import reduce
@@ -327,7 +327,8 @@ def tags_graph():
 
     pos = nx.kamada_kawai_layout(graph, scale=100)
     nx.draw_networkx_nodes(graph, pos, node_size=10000, alpha=0)
-    nx.draw_networkx_edges(graph, pos, width=edge_width, edge_color='gray')
+    nx.draw_networkx_edges(graph, pos, width=edge_width, edge_cmap=cm.get_cmap('Set1'),
+                           edge_color=range(len(graph.edges)))
     nx.draw_networkx_labels(graph, pos, font_size=8, font_color='w',
                             bbox=dict(boxstyle='round', ec='k', fc='k', alpha=1))
 
@@ -335,4 +336,4 @@ def tags_graph():
     pyplot.show()
 
 
-# tags_graph()
+tags_graph()
