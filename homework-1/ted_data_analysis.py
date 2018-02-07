@@ -12,11 +12,14 @@ tedx_data = [d for d in ted_data if 'TEDx' in d.tags]
 def duration_histogram():
     interval = 1
     d = [d.duration for d in ted_data]
-    bins = range(0, int(max(d)), interval)
+    pprint(np.mean(d))
+    bins = range(0, int(max(d)) + interval * 5, interval)
     pyplot.grid(axis='y', zorder=0)
     pyplot.xticks(bins[::5])
+    pyplot.ylabel('Number of talks')
+    pyplot.xlabel('Duration in minutes')
     pyplot.hist(d, bins=bins, edgecolor='black', linewidth=0.5, zorder=2)
-    pyplot.axvline(np.mean(d), color='black')
+    pyplot.axvline(np.mean(d), color='black', linewidth=1)
     pyplot.show()
 
 
@@ -35,14 +38,18 @@ def tag_groups():
     # pprint([(k, tag_frequency[k]) for k in sorted(tag_frequency, key=tag_frequency.get, reverse=True)])
     top_tags = sorted(tag_frequency, key=tag_frequency.get, reverse=True)[:20]
     pyplot.grid(axis='y', zorder=0)
+    pyplot.xlabel('Tags')
+    pyplot.ylabel('Number of talks')
     pyplot.xticks(range(len(top_tags)), top_tags, rotation=90)
     pyplot.bar(range(len(top_tags)), [tag_frequency[t] for t in top_tags], zorder=2)
     pyplot.show()
 
-    top_viewd_tags = sorted(tag_views, key=tag_views.get, reverse=True)[:20]
+    top_viewed_tags = sorted(tag_views, key=tag_views.get, reverse=True)[:20]
     pyplot.grid(axis='y', zorder=0)
-    pyplot.xticks(range(len(top_viewd_tags)), top_viewd_tags, rotation=90)
-    pyplot.bar(range(len(top_viewd_tags)), [tag_views[t] for t in top_viewd_tags], zorder=2)
+    pyplot.xlabel('Tags')
+    pyplot.ylabel('Number of views')
+    pyplot.xticks(range(len(top_viewed_tags)), top_viewed_tags, rotation=90)
+    pyplot.bar(range(len(top_viewed_tags)), [tag_views[t] for t in top_viewed_tags], zorder=2)
     pyplot.show()
 
 
@@ -52,11 +59,15 @@ def tag_groups():
 def views_histogram():
     interval = 500
     d = [d.views / 1000.0 for d in ted_data]  # k-views
-    bins = range(0, int(max(d) + interval), interval)
+    pprint(np.mean(d))
+    bins = range(0, int(max(d)) + interval * 10, interval)
     pyplot.xticks(bins[::10])
     pyplot.yscale('log')
-    pyplot.hist(d, bins=bins, edgecolor='black', linewidth=0.5)
-    pyplot.axvline(np.mean(d), color='black')
+    pyplot.grid(axis='y', zorder=0)
+    pyplot.xlabel('Number of views (in thousands)')
+    pyplot.ylabel('Number of talks (in log scale)')
+    pyplot.hist(d, bins=bins, edgecolor='black', linewidth=0.5, zorder=2)
+    pyplot.axvline(np.mean(d), color='black', linewidth=1)
     pyplot.show()
 
 
@@ -91,7 +102,9 @@ def frequency_over_years():
         published[d.published_date.year] = published.get(d.published_date.year, 0) + 1
 
     pyplot.grid()
-    pyplot.xticks(range(min(filmed.keys()), max(filmed.keys()) + 1), rotation=90)
+    pyplot.xlabel('Year')
+    pyplot.ylabel('Number of talks')
+    pyplot.xticks(range(min(filmed.keys()), max(filmed.keys()) + 1))
     pyplot.plot([k for k in sorted(filmed.keys())], [filmed[k] for k in sorted(filmed.keys())],
                 'o-', label='Talks filmed')
     pyplot.plot([k for k in sorted(published.keys())], [published[k] for k in sorted(published.keys())],
@@ -106,7 +119,6 @@ def frequency_over_years():
 
 
 def time_to_publish():
-    cut = 200
     x_interval = 250
     y_interval = 2
 
@@ -117,12 +129,12 @@ def time_to_publish():
 
     pyplot.grid(axis='y')
     pyplot.xticks(range(0, len(d_film) + x_interval, x_interval))
-    pyplot.yticks(range(min(tstamps), max(tstamps) + y_interval, y_interval))
-    pyplot.plot(range(len(d_film)), y_film, '-', linewidth=0.75)
-    pyplot.plot(range(len(d_film)), y_publish, '-', linewidth=0.75)
+    pyplot.yticks(range(min(tstamps), max(tstamps) + y_interval, y_interval), fontsize=8)
+    pyplot.plot(range(len(d_film)), y_film, '-', linewidth=0.75, label='Date of filming')
+    pyplot.plot(range(len(d_film)), y_publish, '-', linewidth=0.75, label='Date of publication')
     pyplot.fill_between(range(len(d_film)), y_film, y_publish, facecolor='xkcd:ice blue')
-    # pyplot.axvline(cut, color='black')
-    pyplot.ticklabel_format()
+    # pyplot.ticklabel_format()
+    pyplot.legend()
     pyplot.show()
 
 
@@ -134,11 +146,14 @@ def time_to_publish():
 def language_histogram():
     interval = 1
     d = [d.languages for d in ted_data]
-    bins = range(0, int(max(d)), interval)
+    pprint(np.mean(d))
+    bins = range(0, int(max(d)) + 6 * interval, interval)
     pyplot.grid(axis='y', zorder=0)
     pyplot.xticks(bins[::5])
+    pyplot.xlabel('Number of languages')
+    pyplot.ylabel('Number of talks')
     pyplot.hist(d, bins=bins, edgecolor='black', linewidth=0.5, zorder=2)
-    pyplot.axvline(np.mean(d), color='black')
+    pyplot.axvline(np.mean(d), color='black', linewidth=1)
     pyplot.show()
 
 
@@ -150,7 +165,10 @@ def language_view_scatter():
     d_view = [d.views for d in ted_data]
     print(np.corrcoef(d_lang, d_view))
 
-    pyplot.scatter(d_lang, d_view)
+    pyplot.xlabel('Number of languages')
+    pyplot.ylabel('Number of views')
+
+    pyplot.scatter(d_lang, d_view, s=5)
     pyplot.show()
 
 
@@ -162,7 +180,9 @@ def duration_view_scatter():
     d_view = [d.views for d in ted_data]
     print(np.corrcoef(d_dur, d_view))
 
-    pyplot.scatter(d_dur, d_view)
+    pyplot.xlabel('Duration in minutes')
+    pyplot.ylabel('Number of views')
+    pyplot.scatter(d_dur, d_view, s=5)
     pyplot.show()
 
 
@@ -176,10 +196,12 @@ def occupation_group():
             occ_frequency[occ] = occ_frequency.get(occ, 0) + 1
             occ_views[occ] = occ_views.get(occ, 0) + d.views
 
-    # print(len(occ_frequency))
+    print(len(occ_frequency))
     # pprint([(k, tag_frequency[k]) for k in sorted(tag_frequency, key=tag_frequency.get, reverse=True)])
     top_tags = sorted(occ_frequency, key=occ_frequency.get, reverse=True)[:20]
     pyplot.grid(axis='y', zorder=0)
+    pyplot.xlabel('Occupation of speakers')
+    pyplot.ylabel('Number of talks')
     pyplot.xticks(range(len(top_tags)), top_tags, rotation=90)
     pyplot.bar(range(len(top_tags)), [occ_frequency[t] for t in top_tags], zorder=2)
     pyplot.show()
@@ -192,6 +214,7 @@ def occupation_group():
 
 
 # occupation_group()
+
 
 def tag_trend():
     years = range(2006, 2018)
@@ -208,13 +231,15 @@ def tag_trend():
 
     pyplot.xticks(range(len(years)), years)
     pyplot.grid(axis='x')
+    pyplot.xlabel('Year')
+    pyplot.ylabel('Percentage of talks')
 
     for tag in top_tags:
         counts = [len([d for d in ted_data if d.film_date.year == year and tag in d.tags]) / len(
             [d for d in ted_data if d.film_date.year == year]) * 100 for year in years]
         pyplot.plot(counts, label=tag)
 
-    pyplot.legend()
+    pyplot.legend(ncol=4)
     pyplot.show()
 
 
@@ -224,7 +249,7 @@ def tag_trend():
 def comments_histogram():
     interval = 50
     d = [d.comments for d in ted_data]
-    bins = range(0, int(max(d)) + interval, interval)
+    bins = range(0, int(max(d)) + interval * 10, interval)
     print(bins)
     pyplot.grid(axis='y', zorder=0)
     pyplot.xticks(bins[::10])
@@ -253,14 +278,19 @@ def discuss_histogram():
 
 def duration_longwinded_scatter():
     d_dur = [d.duration for d in ted_data]
+
+    pyplot.xlabel('Duration of talk')
+
     d_long = [d.ratings['Longwinded'] for d in ted_data]
+    print(np.corrcoef(d_dur, d_long))
+    pyplot.ylabel("Number of 'Longwinded' ratings")
+    pyplot.scatter(d_dur, d_long, marker='.', s=5)
+    pyplot.show()
+
     d_long_n = [d.norm_ratings['Longwinded'] for d in ted_data]
     print(np.corrcoef(d_dur, d_long_n))
-
-    # pyplot.scatter(d_dur, d_long, marker='.')
-    pyplot.scatter(d_dur, d_long_n, marker='.')
-    pyplot.axvline(25, color='black', linewidth=0.5)
-    pyplot.axvline(47, color='black', linewidth=0.5)
+    pyplot.ylabel("Percentage of 'Longwinded' ratings")
+    pyplot.scatter(d_dur, d_long_n, marker='.', s=5)
     pyplot.show()
 
 
@@ -277,6 +307,13 @@ def tech_occupation():
 
     top_occs = sorted(tech_occ, key=tech_occ.get, reverse=True)[:10]
 
+    pyplot.grid(axis='y', zorder=0)
+    pyplot.xlabel('Occupation of speakers')
+    pyplot.ylabel('Number of talks on technology')
+    pyplot.xticks(range(len(top_occs)), top_occs, rotation=90)
+    pyplot.bar(range(len(top_occs)), [tech_occ[t] for t in top_occs], zorder=2)
+    pyplot.show()
+
     pprint([(k, tech_occ[k]) for k in top_occs])
 
 
@@ -284,7 +321,7 @@ def tech_occupation():
 
 
 def writer_tags():
-    d = [d for d in ted_data if 'writer' in d.speaker_occupation]
+    d = [d for d in ted_data if 'writer' in d.speaker_occupation or 'author' in d.speaker_occupation]
     print(len(d))
     writer_tag = dict()
     for d in d:
@@ -294,6 +331,14 @@ def writer_tags():
             writer_tag[tag] = writer_tag.get(tag, 0) + 1
 
     top_tags = sorted(writer_tag, key=writer_tag.get, reverse=True)[:10]
+
+    pyplot.grid(axis='y', zorder=0)
+    pyplot.xlabel('Tags')
+    pyplot.ylabel('Number of talks by writers and authors')
+    pyplot.xticks(range(len(top_tags)), top_tags, rotation=90)
+    pyplot.bar(range(len(top_tags)), [writer_tag[t] for t in top_tags], zorder=2)
+    pyplot.show()
+
     pprint([(k, writer_tag[k]) for k in top_tags])
 
 
@@ -314,7 +359,7 @@ def tags_graph():
                 edges[u][v] = edges[u].get(v, 0) + 1
 
     graph = nx.Graph()
-    cut = 80
+    cut = 100
 
     for u in edges:
         for v in edges[u]:
@@ -323,17 +368,20 @@ def tags_graph():
                 graph.add_node(v)
                 graph.add_edge(u, v, weight=edges[u][v])
 
+    for u, v, w in sorted(graph.edges(data=True), key=lambda e: e[2]['weight'], reverse=True)[:10]:
+        print(u, v, w)
+
     edge_width = [d['weight'] / cut for (u, v, d) in graph.edges(data=True)]
 
-    pos = nx.kamada_kawai_layout(graph, scale=100)
-    nx.draw_networkx_nodes(graph, pos, node_size=10000, alpha=0)
-    nx.draw_networkx_edges(graph, pos, width=edge_width, edge_cmap=cm.get_cmap('Set1'),
+    pos = nx.kamada_kawai_layout(graph, scale=1000)
+    nx.draw_networkx_nodes(graph, pos, node_size=1000, alpha=0)
+    nx.draw_networkx_edges(graph, pos, width=edge_width, edge_cmap=cm.get_cmap('tab10'),
                            edge_color=range(len(graph.edges)))
-    nx.draw_networkx_labels(graph, pos, font_size=8, font_color='w',
-                            bbox=dict(boxstyle='round', ec='k', fc='k', alpha=1))
+    nx.draw_networkx_labels(graph, pos, font_size=8, font_color='k',
+                            bbox=dict(boxstyle='round', ec='k', fc='w', alpha=1))
 
     pyplot.axis('off')
     pyplot.show()
 
 
-tags_graph()
+# tags_graph()
